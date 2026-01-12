@@ -92,7 +92,7 @@ The game uses a **Synthwave** aesthetic:
 
 | Element | Color |
 |---------|-------|
-| Background | `#090D40` Deep Blue |
+| Background | `#090D40` Deep Blue / `#1b2853` Indigo (alternate) |
 | Player 1 | `#FF005C` Neon Pink |
 | Player 2 | `#00C4FF` Cyber Cyan |
 | Ball | `#FFFFFF` White |
@@ -103,7 +103,7 @@ See `AGENTS.md` for guidelines on working with AI agents in this repository.
 
 ## License
 
-[MIT](LICENSE)
+MIT License
 
 ## Acknowledgments
 

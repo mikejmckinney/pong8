@@ -35,6 +35,8 @@ This is a template repository for building a **mobile-optimized, retro-style mul
 ├── docs/              # Technical documentation and specifications
 ├── AGENTS.md          # Agent instructions (canonical)
 ├── AGENT.md           # Deprecated - points to AGENTS.md
+├── AI_REPO_GUIDE.md   # This file - canonical guide for AI agents
+├── README.md          # Project overview and documentation
 ├── install.sh         # Codespace/dotfiles setup script
 └── test.sh            # Template verification script
 ```
