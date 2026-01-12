@@ -1,7 +1,7 @@
 # AI_REPO_GUIDE.md
 
 > **Purpose**: Canonical reference for AI agents working with this template repository.  
-> **Last verified**: 2025-01-10
+> **Last verified**: 2026-01-12
 
 ## Overview
 
@@ -9,6 +9,7 @@ This is a **dotfiles template repository** for GitHub Codespaces and AI-assisted
 - Pre-configured AI agent prompts for onboarding and code review
 - Automatic VS Code extension installation on Codespace startup
 - Standardized files that can be copied to new repositories
+- **Pong Game Development Prompts**: A complete set of prompts for AI agents to build a mobile-optimized, multiplayer Pong game
 
 ## Quick Start
 
@@ -30,6 +31,11 @@ bash install.sh
 ├── README.md                 # User-facing documentation
 ├── install.sh                # Codespace bootstrap script
 ├── test.sh                   # Verification script
+├── docs/                     # Pong game documentation
+│   ├── AI Agent Game Development Framework.md
+│   ├── AI Agent Prompt for Retro Pong Game.md
+│   ├── Developing a Mobile-Friendly Web Pong Game...md
+│   └── Project Organization and Best Practices...md
 ├── .cursor/
 │   └── BUGBOT.md             # Cursor Bugbot PR review rules
 ├── .gemini/
@@ -40,7 +46,18 @@ bash install.sh
     │   └── judge.agent.md        # Plan-gate + diff-gate reviewer agent
     └── prompts/
         ├── copilot-onboarding.md # Guide for customizing copilot-instructions.md
-        └── repo-onboarding.md    # Comprehensive repo onboarding prompt
+        ├── repo-onboarding.md    # Comprehensive repo onboarding prompt
+        └── pong/                 # Pong game development prompts
+            ├── 00-master.prompt.md
+            ├── 01-phase1-core-loop.prompt.md
+            ├── 02-phase2-networking.prompt.md
+            ├── 03-phase3-authoritative-physics.prompt.md
+            ├── 04-phase4-polish.prompt.md
+            └── rules/
+                ├── domain-ui.prompt.md
+                ├── domain-net.prompt.md
+                ├── domain-audio.prompt.md
+                └── domain-qa.prompt.md
 ```
 
 ## Key Files by Purpose
@@ -59,6 +76,21 @@ bash install.sh
 |------|---------|
 | `.github/prompts/copilot-onboarding.md` | Guide for customizing copilot-instructions.md |
 | `.github/prompts/repo-onboarding.md` | Comprehensive repo onboarding workflow |
+
+### Pong Game Development Prompts
+A complete modular prompt system for AI agents to build a multiplayer Pong game.
+
+| File | Purpose |
+|------|---------|
+| `.github/prompts/pong/00-master.prompt.md` | Master prompt with protocol and overview |
+| `.github/prompts/pong/01-phase1-core-loop.prompt.md` | Phase 1: Single-player foundation |
+| `.github/prompts/pong/02-phase2-networking.prompt.md` | Phase 2: Client-server networking |
+| `.github/prompts/pong/03-phase3-authoritative-physics.prompt.md` | Phase 3: Server-authoritative physics |
+| `.github/prompts/pong/04-phase4-polish.prompt.md` | Phase 4: Audio, polish, deployment |
+| `.github/prompts/pong/rules/domain-ui.prompt.md` | UI/Graphics Synthwave rules |
+| `.github/prompts/pong/rules/domain-net.prompt.md` | Networking/Colyseus rules |
+| `.github/prompts/pong/rules/domain-audio.prompt.md` | Audio engineering guidelines |
+| `.github/prompts/pong/rules/domain-qa.prompt.md` | Testing/QA protocols |
 
 ### Setup Scripts
 | File | Purpose |
@@ -97,6 +129,21 @@ find . -name "*.md" -exec echo "Found: {}" \;
 1. **For new repos**: Copy desired files to your new repository
 2. **For Codespaces**: Link this repo in GitHub Codespaces settings
 3. **Customize**: Update `install.sh` with your preferred extensions
+
+## Using the Pong Game Prompts
+
+The Pong game prompts implement a **modular context engineering** approach for AI agents:
+
+1. **Start with the Master Prompt**: Read `00-master.prompt.md` for project overview and protocol
+2. **Follow Development Phases**: Work through phases 1-4 sequentially
+3. **Load Domain Rules**: Each phase specifies which rule files to load for constraints
+4. **Track Progress**: Update `.context/state/active_task.md` between sessions
+
+### Pong Tech Stack
+- **Frontend**: Phaser 3 (game engine)
+- **Backend**: Node.js + Colyseus (multiplayer)
+- **Database**: Firebase Firestore (leaderboard)
+- **Hosting**: Render/Railway/Fly.io
 
 ## Gotchas / Known Issues
 
