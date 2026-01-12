@@ -337,6 +337,15 @@ class GameScene extends Phaser.Scene {
   }
   
   interpolate(positions, targetTime) {
+    // Handle empty or insufficient position buffer
+    if (!positions || positions.length === 0) {
+      return null; // Caller should handle null (use last known position or default)
+    }
+    
+    if (positions.length === 1) {
+      return positions[0].y;
+    }
+    
     // Find the two positions to interpolate between
     for (let i = 0; i < positions.length - 1; i++) {
       if (positions[i].time <= targetTime && positions[i + 1].time >= targetTime) {

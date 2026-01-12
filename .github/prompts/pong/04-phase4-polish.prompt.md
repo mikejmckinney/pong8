@@ -251,6 +251,9 @@ const POWERUP_DURATION = 5000; // 5 second effect
 
 private powerUpTimer: NodeJS.Timer | null = null;
 
+// Track which player last hit the ball (for power-up attribution)
+private lastHitPlayer: string | null = null;
+
 private startPowerUpSpawning() {
   this.powerUpTimer = setInterval(() => {
     if (this.state.status === "playing") {
@@ -299,9 +302,19 @@ private checkPowerUpCollision() {
 private applyPowerUp(type: string, playerId: string) {
   switch (type) {
     case "enlarge":
-      // Increase paddle height by 50%
+      // Increase paddle height by 50% on the server
+      const player = this.state.players.get(playerId);
+      if (!player) {
+        break;
+      }
+      const originalHeight = player.paddleHeight;
+      player.paddleHeight = originalHeight * 1.5;
       this.broadcast("powerUpEffect", { type, playerId, effect: "paddleEnlarge" });
       setTimeout(() => {
+        const resetPlayer = this.state.players.get(playerId);
+        if (resetPlayer) {
+          resetPlayer.paddleHeight = originalHeight;
+        }
         this.broadcast("powerUpEffect", { type, playerId, effect: "paddleReset" });
       }, POWERUP_DURATION);
       break;
@@ -444,7 +457,8 @@ jobs:
           node-version: '20'
       - run: npm ci
       - run: npm run build
-      - uses: peaceiris/actions-gh-pages@v3
+      # Pinned to v3.9.3 commit SHA for security (avoid supply chain attacks)
+      - uses: peaceiris/actions-gh-pages@884a022509302f1c350073a05fed143bdd96e9c7
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./client/dist

@@ -134,6 +134,9 @@ export class GameRoom extends Room<GameState> {
   // Fixed simulation tick rate
   private readonly TICK_RATE = 60;
   private gameInterval: NodeJS.Timer | null = null;
+  
+  // Track which player last hit the ball (for power-up attribution)
+  private lastHitPlayer: string | null = null;
 }
 ```
 
@@ -205,8 +208,14 @@ private checkPaddleCollision() {
       const hitPosition = (ball.y - player.y) / (player.paddleHeight / 2);
       ball.velocityY = hitPosition * BALL_BASE_SPEED;
       
-      // Speed up ball
-      this.increaseBalSpeed();
+      // Speed up ball (up to MAX_BALL_SPEED)
+      const currentSpeed = Math.sqrt(ball.velocityX ** 2 + ball.velocityY ** 2);
+      if (currentSpeed < MAX_BALL_SPEED) {
+        const newSpeed = Math.min(currentSpeed + BALL_SPEED_INCREMENT, MAX_BALL_SPEED);
+        const scale = newSpeed / currentSpeed;
+        ball.velocityX *= scale;
+        ball.velocityY *= scale;
+      }
       
       // Track last hit for power-ups
       this.lastHitPlayer = player.sessionId;

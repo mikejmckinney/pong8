@@ -544,7 +544,8 @@ jobs:
           path: ./client/dist
       
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+        # Pinned to v3.9.3 commit SHA for security (avoid supply chain attacks)
+        uses: peaceiris/actions-gh-pages@884a022509302f1c350073a05fed143bdd96e9c7
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./client/dist

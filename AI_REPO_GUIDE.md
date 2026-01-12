@@ -1,7 +1,7 @@
 # AI_REPO_GUIDE.md
 
 > **Purpose**: Canonical reference for AI agents working with this template repository.  
-> **Last verified**: 2026-01-11
+> **Last verified**: 2026-01-12
 
 ## Overview
 

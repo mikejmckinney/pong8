@@ -164,33 +164,54 @@ this.player1Score = this.add.text(centerX - 100, scoreY, '0', {
 if (!this.sys.game.device.os.desktop) {
   this.input.addPointer(2); // Support multi-touch
   
-  // Track touch state
+  // Track touch state with pointer IDs to handle drag scenarios
   this.touchingUp = false;
   this.touchingDown = false;
+  this.activeUpPointers = new Set();
+  this.activeDownPointers = new Set();
   
   this.input.on('pointerdown', (pointer) => {
     const halfWidth = this.cameras.main.width * 0.5;
     if (pointer.x < halfWidth) {
+      this.activeUpPointers.add(pointer.id);
       this.touchingUp = true;
     } else {
+      this.activeDownPointers.add(pointer.id);
       this.touchingDown = true;
     }
   });
   
   this.input.on('pointerup', (pointer) => {
-    const halfWidth = this.cameras.main.width * 0.5;
-    if (pointer.x < halfWidth) {
-      this.touchingUp = false;
-    } else {
-      this.touchingDown = false;
+    // Clear touch state based on which side this pointer was contributing to,
+    // rather than its current X position (handles drag-off scenarios)
+    if (this.activeUpPointers.has(pointer.id)) {
+      this.activeUpPointers.delete(pointer.id);
+      this.touchingUp = this.activeUpPointers.size > 0;
+    }
+    if (this.activeDownPointers.has(pointer.id)) {
+      this.activeDownPointers.delete(pointer.id);
+      this.touchingDown = this.activeDownPointers.size > 0;
     }
   });
   
   this.input.on('pointermove', (pointer) => {
     if (pointer.isDown) {
       const halfWidth = this.cameras.main.width * 0.5;
-      this.touchingUp = pointer.x < halfWidth;
-      this.touchingDown = pointer.x >= halfWidth;
+      // Update pointer tracking if it crosses the midpoint
+      const wasUp = this.activeUpPointers.has(pointer.id);
+      const wasDown = this.activeDownPointers.has(pointer.id);
+      const isNowUp = pointer.x < halfWidth;
+      
+      if (wasUp && !isNowUp) {
+        this.activeUpPointers.delete(pointer.id);
+        this.activeDownPointers.add(pointer.id);
+      } else if (wasDown && isNowUp) {
+        this.activeDownPointers.delete(pointer.id);
+        this.activeUpPointers.add(pointer.id);
+      }
+      
+      this.touchingUp = this.activeUpPointers.size > 0;
+      this.touchingDown = this.activeDownPointers.size > 0;
     }
   });
 }
