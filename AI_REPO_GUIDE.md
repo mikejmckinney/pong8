@@ -86,7 +86,7 @@ npm test
 bash test.sh
 ```
 
-Expected output: All checks pass (17 passed, 0 failed)
+Expected output: All checks pass (21 passed, 0 failed)
 
 ## Conventions
 
