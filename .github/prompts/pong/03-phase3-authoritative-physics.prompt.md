@@ -326,7 +326,10 @@ class GameScene extends Phaser.Scene {
     if (this.remotePaddle && this.remotePositions && this.remotePositions.length >= 2) {
       const renderTime = Date.now() - 100; // Render 100ms in the past
       const interpolatedY = this.interpolate(this.remotePositions, renderTime);
-      this.remotePaddle.y = interpolatedY;
+      // Only update if we got a valid interpolation result
+      if (interpolatedY !== null) {
+        this.remotePaddle.y = interpolatedY;
+      }
     }
     
     // Interpolate ball
