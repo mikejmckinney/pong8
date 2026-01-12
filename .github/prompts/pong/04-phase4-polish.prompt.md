@@ -262,6 +262,18 @@ private startPowerUpSpawning() {
   }, POWERUP_SPAWN_INTERVAL);
 }
 
+private stopPowerUpSpawning() {
+  if (this.powerUpTimer) {
+    clearInterval(this.powerUpTimer);
+    this.powerUpTimer = null;
+  }
+}
+
+// IMPORTANT: Call stopPowerUpSpawning() in these lifecycle methods:
+// - In stopGameLoop(): this.stopPowerUpSpawning();
+// - In onDispose(): this.stopPowerUpSpawning();
+// This prevents resource leaks when the room is disposed.
+
 private spawnPowerUp() {
   const types = ["enlarge", "speed", "freeze"];
   const type = types[Math.floor(Math.random() * types.length)];
