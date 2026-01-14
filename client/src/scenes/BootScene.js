@@ -40,16 +40,13 @@ export default class BootScene extends Phaser.Scene {
             loadingText.destroy();
         });
 
-        // Since we're using procedural graphics, no assets to load
-        // But we simulate a brief load for the experience
-        for (let i = 0; i < 10; i++) {
-            this.load.image(`dummy${i}`, 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==');
-        }
+        // No external assets to load - using procedural graphics
+        // Progress bar shows briefly as a visual indication game is starting
     }
 
     create() {
         // Transition to Menu Scene after a brief delay
-        this.time.delayedCall(500, () => {
+        this.time.delayedCall(300, () => {
             this.scene.start('MenuScene');
         });
     }

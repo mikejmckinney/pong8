@@ -66,10 +66,19 @@ export default class Ball extends Phaser.Physics.Arcade.Sprite {
             graphics.destroy();
         }
 
-        // Trail particles using simple sprites
-        this.trailSprites = [];
+        // Trail using pre-allocated sprites (circular buffer for performance)
         this.trailMaxLength = 8;
+        this.trailSprites = new Array(this.trailMaxLength);
+        this.trailIndex = 0;
         this.trailUpdateCounter = 0;
+        
+        // Pre-allocate trail sprites
+        for (let i = 0; i < this.trailMaxLength; i++) {
+            const sprite = this.scene.add.sprite(0, 0, 'ballGlow');
+            sprite.setVisible(false);
+            sprite.setDepth(1);
+            this.trailSprites[i] = sprite;
+        }
     }
 
     /**
@@ -98,9 +107,13 @@ export default class Ball extends Phaser.Physics.Arcade.Sprite {
         this.currentSpeed = this.baseSpeed;
         this.lastHitColor = COLORS.BALL;
         
-        // Clear trail
-        this.trailSprites.forEach(sprite => sprite.destroy());
-        this.trailSprites = [];
+        // Hide all trail sprites
+        for (let i = 0; i < this.trailMaxLength; i++) {
+            if (this.trailSprites[i]) {
+                this.trailSprites[i].setVisible(false);
+            }
+        }
+        this.trailIndex = 0;
     }
 
     /**
@@ -129,34 +142,35 @@ export default class Ball extends Phaser.Physics.Arcade.Sprite {
     }
 
     /**
-     * Update trail effect
+     * Update trail effect using circular buffer for performance
      */
     update() {
         this.trailUpdateCounter++;
         
         // Only update trail every few frames for performance
         if (this.trailUpdateCounter % 2 === 0 && (this.body.velocity.x !== 0 || this.body.velocity.y !== 0)) {
-            // Add new trail position
-            const trailSprite = this.scene.add.sprite(this.x, this.y, 'ballGlow');
+            // Reuse sprite from circular buffer (no allocation/deallocation)
+            const trailSprite = this.trailSprites[this.trailIndex];
+            trailSprite.setPosition(this.x, this.y);
             trailSprite.setTint(this.lastHitColor);
-            trailSprite.setAlpha(0.4);
-            trailSprite.setDepth(1);
+            trailSprite.setVisible(true);
             
-            this.trailSprites.push(trailSprite);
+            // Move to next position in circular buffer
+            this.trailIndex = (this.trailIndex + 1) % this.trailMaxLength;
             
-            // Limit trail length
-            while (this.trailSprites.length > this.trailMaxLength) {
-                const oldSprite = this.trailSprites.shift();
-                oldSprite.destroy();
+            // Update trail visual properties based on age
+            for (let i = 0; i < this.trailMaxLength; i++) {
+                const sprite = this.trailSprites[i];
+                if (sprite.visible) {
+                    // Calculate age based on distance from current index
+                    const age = (this.trailIndex - i + this.trailMaxLength) % this.trailMaxLength;
+                    const normalizedAge = age / this.trailMaxLength;
+                    
+                    // Older sprites are more faded and smaller
+                    sprite.setAlpha(0.4 * (1 - normalizedAge));
+                    sprite.setScale(1 - normalizedAge * 0.5);
+                }
             }
-            
-            // Fade out trail
-            this.trailSprites.forEach((sprite, index) => {
-                const alpha = (index / this.trailSprites.length) * 0.4;
-                sprite.setAlpha(alpha);
-                const scale = 0.5 + (index / this.trailSprites.length) * 0.5;
-                sprite.setScale(scale);
-            });
         }
     }
 
@@ -164,7 +178,11 @@ export default class Ball extends Phaser.Physics.Arcade.Sprite {
      * Clean up resources
      */
     destroy() {
-        this.trailSprites.forEach(sprite => sprite.destroy());
+        for (let i = 0; i < this.trailMaxLength; i++) {
+            if (this.trailSprites[i]) {
+                this.trailSprites[i].destroy();
+            }
+        }
         this.trailSprites = [];
         super.destroy();
     }

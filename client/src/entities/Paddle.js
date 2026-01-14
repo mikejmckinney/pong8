@@ -5,6 +5,13 @@
 import Phaser from 'phaser';
 import { COLORS } from '../main.js';
 
+// AI Configuration Constants
+const AI_MAX_ERROR_RANGE = 50;       // Maximum error in pixels at lowest difficulty
+const AI_MOVEMENT_THRESHOLD = 15;    // Minimum distance to trigger movement
+const AI_PREDICTION_FACTOR = 0.3;    // How far ahead to predict ball position
+const AI_RETURN_SPEED_FACTOR = 0.3;  // Speed when returning to center
+const AI_CENTER_TOLERANCE = 30;      // Distance from center before returning
+
 export default class Paddle extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, isPlayer1 = true) {
         // Create a temporary texture for the paddle
@@ -142,15 +149,15 @@ export default class Paddle extends Phaser.Physics.Arcade.Sprite {
         
         if (ballComingTowards) {
             // Predict where ball will be
-            const predictedY = ball.y + ball.body.velocity.y * 0.3;
+            const predictedY = ball.y + ball.body.velocity.y * AI_PREDICTION_FACTOR;
             const diff = predictedY - this.y;
             
             // Add some error based on difficulty (lower difficulty = more error)
-            const error = (1 - difficulty) * Phaser.Math.Between(-50, 50);
+            const error = (1 - difficulty) * Phaser.Math.Between(-AI_MAX_ERROR_RANGE, AI_MAX_ERROR_RANGE);
             const targetDiff = diff + error;
             
             // Move towards predicted position
-            if (Math.abs(targetDiff) > 15) {
+            if (Math.abs(targetDiff) > AI_MOVEMENT_THRESHOLD) {
                 if (targetDiff > 0) {
                     this.body.setVelocityY(this.paddleSpeed * difficulty);
                 } else {
@@ -163,8 +170,8 @@ export default class Paddle extends Phaser.Physics.Arcade.Sprite {
             // Return to center when ball going away
             const centerY = this.scene.cameras.main.height / 2;
             const diff = centerY - this.y;
-            if (Math.abs(diff) > 30) {
-                this.body.setVelocityY(diff > 0 ? this.paddleSpeed * 0.3 : -this.paddleSpeed * 0.3);
+            if (Math.abs(diff) > AI_CENTER_TOLERANCE) {
+                this.body.setVelocityY(diff > 0 ? this.paddleSpeed * AI_RETURN_SPEED_FACTOR : -this.paddleSpeed * AI_RETURN_SPEED_FACTOR);
             } else {
                 this.stop();
             }
