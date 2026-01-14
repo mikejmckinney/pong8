@@ -4,91 +4,104 @@ This is the canonical guide for AI agents working in this repository. Read this 
 
 ## What This Repo Does
 
-This is a template repository for building a **mobile-optimized, retro-style multiplayer web Pong game** using modern web technologies. It provides the scaffolding, documentation, and AI agent configuration files needed to guide AI-driven development of a complete game featuring:
+This is a **mobile-optimized, retro-style Pong game** built with modern web technologies featuring:
 
-- Synthwave/80s retro aesthetic
-- Mobile-first responsive design
-- Real-time multiplayer via WebSockets
-- Power-up system and leaderboards
-- Phaser 3 game engine + Colyseus/Socket.io server
+- ✅ Synthwave/80s retro aesthetic (Neon Pink, Cyber Cyan, CRT effects)
+- ✅ Mobile-first responsive design (touch controls, landscape orientation)
+- ✅ Single-player mode with AI opponent
+- ✅ Procedural audio using Web Audio API
+- 🔜 Real-time multiplayer via WebSockets (Phase 2)
+- 🔜 Power-up system and leaderboards (Phase 4)
+- Phaser 3 game engine + Vite build system
 
 ## Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
-| **Game Engine** | Phaser 3 | 2D rendering, physics, input handling |
-| **Backend** | Node.js + Socket.io/Colyseus | Real-time multiplayer, authoritative server |
-| **Database** | Firebase Firestore | Leaderboards, persistence |
-| **Language** | JavaScript/TypeScript | Modern ES6+ syntax |
+| **Game Engine** | Phaser 3.87 | 2D rendering, physics, input handling |
+| **Build Tool** | Vite 6.x | Fast development and production builds |
+| **Backend** | Node.js + Socket.io/Colyseus | Real-time multiplayer (future) |
+| **Database** | Firebase Firestore | Leaderboards (future) |
+| **Language** | JavaScript (ES6+) | Modern syntax with modules |
 | **Hosting** | PaaS (Render, Railway, Fly.io) | Easy deployment |
 
 ## Folder Map
 
 ```
 /
-├── .cursor/           # Cursor AI configuration (BUGBOT.md)
-├── .gemini/           # Gemini AI style guide
+├── client/                # Game client application
+│   ├── src/
+│   │   ├── main.js        # Entry point, Phaser config
+│   │   ├── scenes/        # Phaser scenes (Boot, Menu, Game)
+│   │   ├── entities/      # Game objects (Paddle, Ball)
+│   │   └── audio/         # Audio manager (Web Audio API)
+│   ├── index.html         # HTML with CRT effects
+│   ├── vite.config.js     # Vite configuration
+│   └── package.json       # Dependencies
+├── .cursor/               # Cursor AI configuration
+├── .gemini/               # Gemini AI style guide
 ├── .github/
-│   ├── agents/        # Custom agent definitions (judge.agent.md)
-│   ├── prompts/       # Onboarding prompts for AI agents
-│   └── copilot-instructions.md  # GitHub Copilot instructions
-├── docs/              # Technical documentation and specifications
-├── AGENTS.md          # Agent instructions (canonical)
-├── AGENT.md           # Deprecated - points to AGENTS.md
-├── AI_REPO_GUIDE.md   # This file - canonical guide for AI agents
-├── README.md          # Project overview and documentation
-├── install.sh         # Codespace/dotfiles setup script
-└── test.sh            # Template verification script
+│   ├── agents/            # Custom agent definitions
+│   ├── prompts/           # AI onboarding prompts
+│   └── copilot-instructions.md
+├── docs/                  # Technical specifications
+├── AGENTS.md              # Agent instructions
+├── AI_REPO_GUIDE.md       # This file
+├── README.md              # Project overview
+├── install.sh             # Codespace setup
+└── test.sh                # Template verification
 ```
 
 ## Key Entry Points
 
-- **Game Client**: Not yet implemented. Will be in `client/` using Phaser 3
-- **Game Server**: Not yet implemented. Will be in `server/` using Node.js + Socket.io/Colyseus
-- **Shared Types**: Will be in `shared/` for TypeScript interfaces
-- **Agent Context**: `.context/` directory (to be created) for AI agent memory
+- **Game Client**: `client/src/main.js` - Phaser 3 game initialization
+- **Game Scenes**: `client/src/scenes/` - BootScene, MenuScene, GameScene
+- **Game Entities**: `client/src/entities/` - Paddle.js, Ball.js
+- **Audio**: `client/src/audio/AudioManager.js` - Procedural sound
+- **Server**: Not yet implemented (Phase 2)
 
 ## Configuration Files
 
 | File | Purpose |
 |------|---------|
-| `.github/copilot-instructions.md` | GitHub Copilot agent instructions |
+| `client/vite.config.js` | Vite build configuration |
+| `client/package.json` | Game dependencies |
+| `.github/copilot-instructions.md` | GitHub Copilot instructions |
 | `.cursor/BUGBOT.md` | Cursor AI PR review rules |
 | `.gemini/styleguide.md` | Gemini code review style guide |
-| `.github/agents/judge.agent.md` | Plan/diff review agent |
 
 ## How to Run Locally
-
-This is a template repository. To start development:
 
 ```bash
 # 1. Verify template structure
 bash test.sh
 
-# 2. Setup codespace environment (if in Codespaces)
-bash install.sh
-```
+# 2. Install game dependencies
+cd client && npm install
 
-Once game code is implemented:
-```bash
-# Install dependencies (future)
-npm install
-
-# Run development server (future)
+# 3. Run development server
 npm run dev
 
-# Run tests (future)
-npm test
+# 4. Open in browser (usually http://localhost:3000)
+```
+
+### Production Build
+
+```bash
+cd client
+npm run build    # Creates optimized build in dist/
+npm run preview  # Preview production build locally
 ```
 
 ## How to Test
 
 ```bash
-# Verify all template files exist and are valid
+# Verify template files exist
 bash test.sh
-```
 
-Expected output: All checks pass (21 passed, 0 failed)
+# Build game to check for errors
+cd client && npm run build
+```
 
 ## Conventions
 
@@ -147,12 +160,17 @@ Expected output: All checks pass (21 passed, 0 failed)
 - Implement client-side prediction with reconciliation
 - Use interpolation for remote entities
 
-## Development Phases (Recommended)
+## Development Phases
 
-1. **Phase 1: Core Loop** - Single-player Pong with Phaser 3
-2. **Phase 2: Network Plumbing** - Client-server connection with Colyseus
-3. **Phase 3: Authoritative Physics** - Server-side game logic
-4. **Phase 4: Polish** - Audio, effects, deployment
+1. ✅ **Phase 1: Core Loop** - Single-player Pong with Phaser 3
+   - Paddle and Ball entities with arcade physics
+   - AI opponent with difficulty scaling
+   - Synthwave visuals (glow effects, CRT overlay)
+   - Procedural audio (Web Audio API)
+   - Touch and keyboard controls
+2. 🔜 **Phase 2: Network Plumbing** - Client-server connection with Colyseus
+3. 🔜 **Phase 3: Authoritative Physics** - Server-side game logic
+4. 🔜 **Phase 4: Polish** - Power-ups, leaderboards, deployment
 
 ## For AI Agents
 

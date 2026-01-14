@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Pong8 - Retro Arcade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #090D40;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        canvas {
+            touch-action: none;
+        }
+
+        /* CRT Scanline Effect Overlay */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            mix-blend-mode: overlay;
+        }
+
+        /* Vignette Effect */
+        .crt-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+        }
+
+        /* Landscape Mode Warning */
+        #rotate-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #090D40;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #FF005C;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #rotate-screen .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            animation: rotate-icon 2s ease-in-out infinite;
+        }
+
+        #rotate-screen p {
+            font-size: 12px;
+            line-height: 1.8;
+            max-width: 300px;
+        }
+
+        @keyframes rotate-icon {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        /* Show rotate screen in portrait mode */
+        @media (orientation: portrait) {
+            #rotate-screen {
+                display: flex;
+            }
+        }
+
+        /* CRT Flicker Animation */
+        @keyframes crt-flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        .crt-overlay {
+            animation: crt-flicker 0.15s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    <div class="crt-overlay"></div>
+    <div id="rotate-screen">
+        <div class="icon">📱</div>
+        <p>Please rotate your device to landscape mode for the best experience</p>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

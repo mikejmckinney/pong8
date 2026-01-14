@@ -1,25 +1,28 @@
-# Pong8 - AI-Driven Retro Multiplayer Pong
+# Pong8 - Retro Arcade Pong Game
 
-A mobile-optimized, retro-style multiplayer web Pong game built with modern web technologies and AI-assisted development.
+A mobile-optimized, retro-style Pong game with Synthwave aesthetics, built with Phaser 3 and modern web technologies.
 
-## Overview
+![Pong8 Menu](https://github.com/user-attachments/assets/307c7e1f-77ef-4404-928e-f2b9c3fa5b38)
 
-Pong8 is a template repository that provides the scaffolding and documentation for building a complete multiplayer Pong game with:
+## Features
 
-- 🎮 **Retro Synthwave Aesthetic** - Neon colors, CRT effects, 80s vibes
+- 🎮 **Classic Pong Gameplay** - Fast-paced arcade action
+- 🌈 **Synthwave Aesthetic** - Neon colors, CRT effects, 80s vibes
 - 📱 **Mobile-First Design** - Touch controls, responsive scaling
-- 🌐 **Real-Time Multiplayer** - Server-authoritative WebSocket gameplay
-- ⚡ **Power-Ups & Modes** - Speed boosts, paddle enlargements, freeze effects
-- 🏆 **Leaderboards** - Persistent score tracking
+- 🤖 **AI Opponent** - Single-player mode with adjustable difficulty
+- 🔊 **Procedural Audio** - Retro 8-bit sounds using Web Audio API
+- 🖥️ **CRT Effects** - Scanlines and vignette overlay
+
+![Pong8 Gameplay](https://github.com/user-attachments/assets/98335d87-a2c8-4b03-86a4-d3f3b2a99c98)
 
 ## Tech Stack
 
 - **Frontend**: [Phaser 3](https://phaser.io/) - HTML5 game framework
-- **Backend**: Node.js + [Colyseus](https://colyseus.io/) / Socket.io
-- **Database**: Firebase Firestore
-- **Deployment**: Render / Railway / Fly.io
+- **Build Tool**: [Vite](https://vitejs.dev/) - Fast development server and bundler
+- **Audio**: Web Audio API - Procedural sound generation
+- **Future**: Node.js + Colyseus for multiplayer
 
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
@@ -33,33 +36,39 @@ Pong8 is a template repository that provides the scaffolding and documentation f
 git clone https://github.com/mikejmckinney/pong8.git
 cd pong8
 
-# Verify template structure
-bash test.sh
+# Install dependencies
+cd client
+npm install
+
+# Start development server
+npm run dev
 ```
 
-### For GitHub Codespaces
+Open http://localhost:3000 in your browser to play!
 
-The repository includes a setup script for Codespaces:
+### Controls
 
-```bash
-bash install.sh
-```
+| Platform | Controls |
+|----------|----------|
+| **Desktop** | Arrow keys (↑/↓) or W/S |
+| **Mobile** | Tap left side to move up, right side to move down |
+| **Pause** | ESC or P key, or tap pause button |
 
 ## Project Structure
 
 ```
 pong8/
-├── .cursor/              # Cursor AI configuration
-├── .gemini/              # Gemini AI style guide
-├── .github/
-│   ├── agents/           # Custom AI agents
-│   ├── prompts/          # AI onboarding prompts
-│   └── copilot-instructions.md
-├── docs/                 # Technical specifications
-├── AI_REPO_GUIDE.md      # Canonical guide for AI agents
-├── AGENTS.md             # Agent behavior rules
-├── install.sh            # Codespace setup
-└── test.sh               # Template verification
+├── client/                # Game client
+│   ├── src/
+│   │   ├── main.js        # Entry point
+│   │   ├── scenes/        # Phaser scenes
+│   │   ├── entities/      # Game objects
+│   │   └── audio/         # Audio manager
+│   ├── index.html         # HTML with CRT effects
+│   └── package.json       # Dependencies
+├── docs/                  # Technical specs
+├── AI_REPO_GUIDE.md       # AI agent guide
+└── AGENTS.md              # Agent rules
 ```
 
 ## Documentation
@@ -81,10 +90,10 @@ This repository is designed for AI-assisted development. AI agents should:
 
 ## Development Phases
 
-1. **Phase 1**: Core game loop (single-player Pong)
-2. **Phase 2**: Network infrastructure (WebSocket connections)
-3. **Phase 3**: Authoritative multiplayer (server-side physics)
-4. **Phase 4**: Polish (audio, effects, deployment)
+- [x] **Phase 1**: Core game loop (single-player Pong with AI)
+- [ ] **Phase 2**: Network infrastructure (WebSocket connections)
+- [ ] **Phase 3**: Authoritative multiplayer (server-side physics)
+- [ ] **Phase 4**: Polish (power-ups, leaderboards, deployment)
 
 ## Visual Design
 

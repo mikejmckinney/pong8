@@ -1,0 +1,20 @@
+{
+  "name": "pong8-client",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": ["pong", "phaser", "game", "retro", "synthwave"],
+  "author": "",
+  "license": "MIT",
+  "description": "Mobile-optimized retro Pong game with Synthwave aesthetic",
+  "dependencies": {
+    "phaser": "^3.87.0"
+  },
+  "devDependencies": {
+    "vite": "^6.1.0"
+  }
+}
