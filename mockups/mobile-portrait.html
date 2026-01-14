@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SynthPong - Mobile View Mockup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Press Start 2P', monospace;
+      background: #000;
+    }
+    
+    .device-frame {
+      position: relative;
+      width: 375px;
+      height: 667px;
+      margin: 20px auto;
+      background: #1a1a1a;
+      border-radius: 40px;
+      padding: 50px 15px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+    
+    .device-screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #090D40;
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    
+    /* Rotate overlay for portrait mode */
+    .rotate-device {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #090D40;
+      z-index: 1000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: #FF005C;
+      text-align: center;
+      padding: 40px;
+    }
+    
+    .rotate-device-icon {
+      font-size: 64px;
+      margin-bottom: 30px;
+      animation: rotate 2s infinite ease-in-out;
+    }
+    
+    @keyframes rotate {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(90deg); }
+    }
+    
+    .rotate-message {
+      font-size: 12px;
+      line-height: 2;
+      text-shadow: 0 0 10px #FF005C;
+    }
+    
+    .rotate-hint {
+      font-size: 8px;
+      color: #00C4FF;
+      margin-top: 30px;
+      text-shadow: 0 0 5px #00C4FF;
+    }
+    
+    /* CRT overlay */
+    .crt-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      z-index: 1001;
+    }
+    
+    /* Vignette */
+    .vignette {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      z-index: 1002;
+    }
+    
+    /* Device notch */
+    .notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 25px;
+      background: #1a1a1a;
+      border-radius: 0 0 15px 15px;
+      z-index: 100;
+    }
+    
+    /* Device label */
+    .device-label {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #666;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="device-frame">
+    <div class="notch"></div>
+    <div class="device-screen">
+      <div class="rotate-device">
+        <div class="rotate-device-icon">📱</div>
+        <p class="rotate-message">PLEASE ROTATE<br>YOUR DEVICE</p>
+        <p class="rotate-hint">LANDSCAPE MODE REQUIRED</p>
+      </div>
+      <div class="crt-overlay"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="device-label">iPhone (Portrait Mode)</div>
+  </div>
+</body>
+</html>
