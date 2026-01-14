@@ -94,8 +94,103 @@ if (this.game.renderer.type === Phaser.WEBGL) {
 }
 ```
 
-#### Background Grid (Perspective Effect)
+#### Synthwave Sun (Horizon Element)
 
+The synthwave aesthetic features a gradient sun at the horizon with horizontal stripe lines:
+
+**Sun Colors (top to bottom gradient)**:
+| Position | Hex Code | Color |
+|----------|----------|-------|
+| 0-20% | `#FF005C` | Neon Pink |
+| 40% | `#FF6B00` | Orange |
+| 60-100% | `#FFD93D` | Yellow |
+
+**Implementation (CSS)**:
+```css
+.synthwave-sun {
+  position: absolute;
+  bottom: 8%;  /* Position near bottom of screen */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 220px;
+  height: 220px;
+  background: linear-gradient(to bottom, #FF005C 0%, #FF6B00 40%, #FFD93D 100%);
+  border-radius: 50%;
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+  box-shadow: 0 0 60px #FF005C, 0 0 100px #FF6B00;
+}
+
+/* Horizontal stripe lines on sun */
+.synthwave-sun::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 50%;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px, transparent 8px,
+    #090D40 8px, #090D40 12px
+  );
+}
+```
+
+**Implementation (Phaser)**:
+```javascript
+// Create sun with gradient texture
+createSunTexture() {
+  const graphics = this.make.graphics({ add: false });
+  const colors = [0xFF005C, 0xFF6B00, 0xFFD93D];
+  
+  // Draw gradient circle
+  for (let i = 0; i < 90; i++) {
+    const colorIndex = Math.floor((i / 90) * colors.length);
+    graphics.fillStyle(colors[Math.min(colorIndex, colors.length - 1)]);
+    graphics.fillRect(0, i, 180, 1);
+  }
+  
+  graphics.generateTexture('sun', 180, 90);
+}
+
+// Add sun to scene
+this.sun = this.add.image(400, 300, 'sun');
+this.sun.postFX.addGlow(0xFF005C, 4, 0, false, 0.5, 32);
+```
+
+#### Background Grid (Animated Perspective Effect)
+
+The grid recedes into the horizon with a scrolling animation:
+
+**Grid Specifications**:
+- Line color: `#FF005C` (Neon Pink) at 30% opacity
+- Cell size: 60px x 30px (perspective adjusted)
+- Scroll speed: 30px per second (moving toward viewer)
+- Perspective angle: 45-60 degrees
+
+**Implementation (CSS)**:
+```css
+.perspective-grid {
+  position: absolute;
+  bottom: 0;
+  left: -50%;
+  width: 200%;
+  height: 42%;
+  background-image: 
+    linear-gradient(transparent 95%, #FF005C 95%),
+    linear-gradient(90deg, transparent 49.5%, #FF005C 50.5%, transparent 50.5%);
+  background-size: 80px 40px;
+  transform: perspective(150px) rotateX(45deg);
+  transform-origin: center top;
+  animation: gridScroll 1.5s linear infinite;
+}
+
+@keyframes gridScroll {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 40px; }
+}
+```
+
+**Implementation (Phaser)**:
 ```javascript
 // Create tiled grid sprite that scrolls vertically
 this.gridBackground = this.add.tileSprite(400, 300, 800, 600, 'grid');

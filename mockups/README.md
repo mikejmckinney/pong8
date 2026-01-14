@@ -14,20 +14,25 @@ The mockups follow the design guidelines from:
 | Element | Hex Code | Description |
 |---------|----------|-------------|
 | Background | `#090D40` | Deep Void Blue |
-| Grid Lines | `#2b2b2b` | Perspective scroll effect |
+| Grid Lines | `#FF005C` | Neon Pink (30% opacity) |
 | Player 1 | `#FF005C` | Neon Pink with bloom |
 | Player 2 | `#00C4FF` | Cyber Cyan with bloom |
 | Ball | `#FFFFFF` | White core |
+| Sun Top | `#FF005C` | Neon Pink |
+| Sun Middle | `#FF6B00` | Orange |
+| Sun Bottom | `#FFD93D` | Yellow |
 
 ### Typography
 - **Font**: "Press Start 2P" (Google Fonts)
 - **Style**: Retro arcade pixelated
 
 ### Effects
-- CRT scanline overlay
-- Vignette effect
-- Neon glow/bloom on paddles
-- Particle trails on ball
+- **Synthwave Sun** - Gradient sun at horizon with horizontal stripe lines
+- **Animated Perspective Grid** - Receding grid scrolling toward viewer
+- **CRT scanline overlay** - Simulated monitor lines
+- **Vignette effect** - Darkened edges
+- **Neon glow/bloom** - Box-shadow based bloom on paddles
+- **Particle trails** - Ball motion trail
 
 ## Screenshots
 
@@ -39,6 +44,8 @@ The main menu features:
 - Subtitle in cyber cyan
 - Menu options with selection indicator
 - Decorative paddles showing player colors
+- **Synthwave sun at horizon** with gradient colors and stripe lines
+- **Animated perspective grid** receding into the horizon
 - Gradient neon border lines
 - CRT scanline and vignette effects
 
@@ -51,7 +58,8 @@ The gameplay view shows:
 - White ball with motion trail
 - Dashed center line
 - Power-up indicator (enlarge power-up shown)
-- Grid background for depth
+- **Subtle synthwave sun** in background (reduced opacity)
+- **Animated perspective grid** as floor effect
 - Player labels at bottom
 
 ### Mobile Portrait View
@@ -67,8 +75,8 @@ When device is in portrait orientation:
 
 The mockups are implemented as static HTML/CSS files that can be viewed in any browser:
 
-- `menu-screen.html` - Main menu mockup
-- `gameplay-screen.html` - Active gameplay mockup
+- `menu-screen.html` - Main menu mockup with animated grid
+- `gameplay-screen.html` - Active gameplay mockup with animated grid
 - `mobile-portrait.html` - Mobile rotation prompt mockup
 
 ### Viewing the Mockups
@@ -84,6 +92,31 @@ python3 -m http.server 8080
 # http://localhost:8080/mobile-portrait.html
 ```
 
+## Synthwave Background Implementation
+
+### Sun Effect (CSS)
+```css
+.synthwave-sun {
+  background: linear-gradient(to bottom, #FF005C, #FF6B00, #FFD93D);
+  border-radius: 50%;
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+  box-shadow: 0 0 60px #FF005C, 0 0 100px #FF6B00;
+}
+```
+
+### Animated Grid (CSS)
+```css
+.perspective-grid {
+  transform: perspective(150px) rotateX(45deg);
+  animation: gridScroll 1.5s linear infinite;
+}
+
+@keyframes gridScroll {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 40px; }
+}
+```
+
 ## Implementation Notes
 
 These mockups are purely visual representations created with HTML/CSS. The actual game will be implemented using:
@@ -92,4 +125,4 @@ These mockups are purely visual representations created with HTML/CSS. The actua
 - **WebGL** with PostFX pipeline for bloom effects
 - **Colyseus** for multiplayer networking
 
-The CSS effects shown (bloom via `box-shadow`, CRT via `linear-gradient`) demonstrate the intended look. In the Phaser implementation, native PostFX effects will provide higher quality rendering.
+The CSS effects shown (bloom via `box-shadow`, CRT via `linear-gradient`, perspective grid via CSS transforms) demonstrate the intended look. In the Phaser implementation, native PostFX effects and tileSprite scrolling will provide higher quality rendering.

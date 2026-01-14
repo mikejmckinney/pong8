@@ -30,18 +30,114 @@
       overflow: hidden;
     }
     
-    /* Perspective grid background */
-    .grid-background {
+    /* Synthwave Sun */
+    .synthwave-sun {
+      position: absolute;
+      bottom: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 220px;
+      background: linear-gradient(
+        to bottom,
+        #FF005C 0%,
+        #FF005C 20%,
+        #FF6B00 40%,
+        #FFD93D 60%,
+        #FFD93D 100%
+      );
+      border-radius: 50%;
+      clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+      box-shadow: 
+        0 0 60px #FF005C,
+        0 0 100px #FF6B00,
+        0 0 140px rgba(255, 217, 61, 0.5);
+      z-index: 1;
+    }
+    
+    /* Sun stripe lines */
+    .synthwave-sun::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 8px,
+        #090D40 8px,
+        #090D40 12px
+      );
+    }
+    
+    /* Horizon line */
+    .horizon-line {
+      position: absolute;
+      bottom: 8%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, 
+        transparent, 
+        #FF005C 20%, 
+        #00C4FF 50%, 
+        #FF005C 80%, 
+        transparent
+      );
+      box-shadow: 0 0 20px #FF005C, 0 0 40px #00C4FF;
+      z-index: 2;
+    }
+    
+    /* Animated perspective grid */
+    .perspective-grid {
+      position: absolute;
+      bottom: 0;
+      left: -50%;
+      width: 200%;
+      height: 8%;
+      background-image: 
+        linear-gradient(transparent 0%, transparent 95%, #FF005C 95%, #FF005C 100%),
+        linear-gradient(90deg, transparent 0%, transparent 49.5%, #FF005C 49.5%, #FF005C 50.5%, transparent 50.5%, transparent 100%);
+      background-size: 80px 40px;
+      transform: perspective(150px) rotateX(45deg);
+      transform-origin: center top;
+      animation: gridScroll 1.5s linear infinite;
+      z-index: 1;
+    }
+    
+    @keyframes gridScroll {
+      0% { background-position-y: 0; }
+      100% { background-position-y: 40px; }
+    }
+    
+    /* Sky gradient background */
+    .sky-background {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
-      background-image: 
-        linear-gradient(#2b2b2b 1px, transparent 1px),
-        linear-gradient(90deg, #2b2b2b 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.5;
+      height: 92%;
+      background: linear-gradient(
+        to bottom,
+        #090D40 0%,
+        #0D1654 40%,
+        #1a1a4e 70%,
+        #2d1f5e 100%
+      );
+      z-index: 0;
+    }
+    
+    /* Ground area background */
+    .ground-background {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 8%;
+      background: #090D40;
+      z-index: 0;
     }
     
     /* CRT scanline overlay */
@@ -211,7 +307,16 @@
 </head>
 <body style="background: #000;">
   <div id="game-container">
-    <div class="grid-background"></div>
+    <!-- Sky and ground backgrounds -->
+    <div class="sky-background"></div>
+    <div class="ground-background"></div>
+    
+    <!-- Synthwave sun at horizon -->
+    <div class="synthwave-sun"></div>
+    <div class="horizon-line"></div>
+    
+    <!-- Animated perspective grid -->
+    <div class="perspective-grid"></div>
     
     <!-- Decorative elements -->
     <div class="neon-line-top"></div>

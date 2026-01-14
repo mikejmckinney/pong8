@@ -30,18 +30,87 @@
       overflow: hidden;
     }
     
-    /* Perspective grid background */
-    .grid-background {
+    /* Synthwave Sun (smaller, higher for gameplay) */
+    .synthwave-sun {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(
+        to bottom,
+        #FF005C 0%,
+        #FF005C 20%,
+        #FF6B00 40%,
+        #FFD93D 60%,
+        #FFD93D 100%
+      );
+      border-radius: 50%;
+      clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+      box-shadow: 
+        0 0 40px #FF005C,
+        0 0 80px #FF6B00,
+        0 0 120px rgba(255, 217, 61, 0.3);
+      z-index: 1;
+      opacity: 0.6;
+    }
+    
+    /* Sun stripe lines */
+    .synthwave-sun::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 6px,
+        #090D40 6px,
+        #090D40 10px
+      );
+    }
+    
+    /* Animated perspective grid floor */
+    .perspective-grid {
+      position: absolute;
+      bottom: 0;
+      left: -50%;
+      width: 200%;
+      height: 100%;
+      background-image: 
+        linear-gradient(transparent 0%, transparent 97%, rgba(255, 0, 92, 0.3) 97%, rgba(255, 0, 92, 0.3) 100%),
+        linear-gradient(90deg, transparent 0%, transparent 49.7%, rgba(255, 0, 92, 0.3) 49.7%, rgba(255, 0, 92, 0.3) 50.3%, transparent 50.3%, transparent 100%);
+      background-size: 60px 30px;
+      transform: perspective(300px) rotateX(60deg);
+      transform-origin: center top;
+      animation: gridScroll 2s linear infinite;
+      z-index: 0;
+      opacity: 0.4;
+    }
+    
+    @keyframes gridScroll {
+      0% { background-position-y: 0; }
+      100% { background-position-y: 30px; }
+    }
+    
+    /* Sky gradient background */
+    .sky-background {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: 
-        linear-gradient(#2b2b2b 1px, transparent 1px),
-        linear-gradient(90deg, #2b2b2b 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.5;
+      background: linear-gradient(
+        to bottom,
+        #090D40 0%,
+        #0D1654 30%,
+        #1a1a4e 60%,
+        #090D40 100%
+      );
+      z-index: 0;
     }
     
     /* CRT scanline overlay */
@@ -273,7 +342,14 @@
 </head>
 <body style="background: #000;">
   <div id="game-container">
-    <div class="grid-background"></div>
+    <!-- Sky background -->
+    <div class="sky-background"></div>
+    
+    <!-- Synthwave sun (background element) -->
+    <div class="synthwave-sun"></div>
+    
+    <!-- Animated perspective grid -->
+    <div class="perspective-grid"></div>
     
     <!-- Boundaries -->
     <div class="boundary-top"></div>
