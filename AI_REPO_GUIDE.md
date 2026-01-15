@@ -103,6 +103,14 @@ bash test.sh
 
 Expected output: All checks pass (21 passed, 0 failed)
 
+## CI
+
+GitHub Actions runs `ci.yml` to verify:
+
+- `bash test.sh`
+- `npm ci && npm run build` in `client/`
+- `npm ci && npm run build` in `server/`
+
 ## Conventions
 
 ### Code Style
