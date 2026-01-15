@@ -3,6 +3,13 @@ import { Paddle } from "../objects/Paddle.js";
 import { Ball } from "../objects/Ball.js";
 import { networkManager } from "../network/NetworkManager.js";
 
+const NETWORK_WIDTH = 800;
+const NETWORK_HEIGHT = 600;
+const NETWORK_PADDLE_SPEED = 8;
+const NETWORK_PADDLE_LERP = 0.3;
+const NETWORK_BALL_LERP = 0.35;
+const RECONCILIATION_THRESHOLD = 5;
+
 export class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
@@ -66,9 +73,32 @@ export class GameScene extends Phaser.Scene {
 
     this.setupControls();
 
+    this.networkMode = false;
+    this.networkReady = false;
     this.lastSentDirection = "STOP";
-    networkManager.connect().then((connected) => {
-      this.networkReady = connected;
+    this.playerSides = new Map();
+    this.leftSessionId = null;
+    this.rightSessionId = null;
+    this.localSessionId = null;
+    this.localSide = null;
+    this.serverLocalY = null;
+    this.predictedLocalY = null;
+    this.leftTargetY = null;
+    this.rightTargetY = null;
+    this.serverBallTarget = null;
+    this.netScaleX = width / NETWORK_WIDTH;
+    this.netScaleY = height / NETWORK_HEIGHT;
+
+    networkManager.connect().then((room) => {
+      if (!room) {
+        this.networkReady = false;
+        return;
+      }
+
+      this.networkReady = true;
+      this.localSessionId = networkManager.getLocalSessionId();
+      this.enableNetworkMode();
+      this.setupNetworkListeners(room);
     });
 
     const initialDirection = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
@@ -227,40 +257,153 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  update() {
+  enableNetworkMode() {
+    this.networkMode = true;
+    const { width, height } = this.cameras.main;
+
+    this.ball.reset(width * 0.5, height * 0.5);
+    this.ball.setVelocity(0, 0);
+
+    if (this.ball.body) {
+      this.ball.body.enable = false;
+    }
+    if (this.leftPaddle.body) {
+      this.leftPaddle.body.enable = false;
+    }
+    if (this.rightPaddle.body) {
+      this.rightPaddle.body.enable = false;
+    }
+  }
+
+  setupNetworkListeners(room) {
+    room.state.players.onAdd((player, sessionId) => {
+      const side = player.x < NETWORK_WIDTH * 0.5 ? "left" : "right";
+      this.playerSides.set(sessionId, side);
+
+      if (side === "left") {
+        this.leftSessionId = sessionId;
+      } else {
+        this.rightSessionId = sessionId;
+      }
+
+      if (sessionId === this.localSessionId) {
+        this.localSide = side;
+      }
+
+      player.onChange(() => {
+        this.applyServerPlayerState(sessionId, player);
+      });
+
+      this.applyServerPlayerState(sessionId, player);
+    });
+
+    room.state.players.onRemove((_player, sessionId) => {
+      const side = this.playerSides.get(sessionId);
+      if (side === "left") {
+        this.leftSessionId = null;
+        this.leftTargetY = null;
+      } else if (side === "right") {
+        this.rightSessionId = null;
+        this.rightTargetY = null;
+      }
+      if (sessionId === this.localSessionId) {
+        this.localSide = null;
+      }
+      this.playerSides.delete(sessionId);
+    });
+
+    room.state.ball.onChange(() => {
+      const { x, y } = room.state.ball;
+      this.serverBallTarget = this.scaleNetworkPosition(x, y);
+    });
+
+    room.onMessage("gameEnd", (payload) => {
+      if (payload?.winner) {
+        console.log(`Winner: ${payload.winner}`);
+      }
+    });
+  }
+
+  applyServerPlayerState(sessionId, player) {
+    const side = this.playerSides.get(sessionId);
+    if (!side) {
+      return;
+    }
+
+    const scaled = this.scaleNetworkPosition(player.x, player.y);
+    const paddle = side === "left" ? this.leftPaddle : this.rightPaddle;
+    paddle.x = scaled.x;
+
+    if (sessionId === this.localSessionId) {
+      this.serverLocalY = scaled.y;
+      if (this.predictedLocalY === null) {
+        this.predictedLocalY = scaled.y;
+        paddle.y = scaled.y;
+      }
+    } else if (side === "left") {
+      this.leftTargetY = scaled.y;
+    } else {
+      this.rightTargetY = scaled.y;
+    }
+
+    if (side === "left") {
+      this.leftScoreText.setText(`${player.score}`);
+    } else {
+      this.rightScoreText.setText(`${player.score}`);
+    }
+  }
+
+  scaleNetworkPosition(x, y) {
+    return {
+      x: x * this.netScaleX,
+      y: y * this.netScaleY,
+    };
+  }
+
+  getInputDirectionValue() {
+    if (this.touchingUp) {
+      return -1;
+    }
+    if (this.touchingDown) {
+      return 1;
+    }
+    if (this.cursors) {
+      if (this.cursors.up.isDown) {
+        return -1;
+      }
+      if (this.cursors.down.isDown) {
+        return 1;
+      }
+    }
+    return 0;
+  }
+
+  getInputDirectionLabel(directionValue) {
+    if (directionValue === -1) {
+      return "UP";
+    }
+    if (directionValue === 1) {
+      return "DOWN";
+    }
+    return "STOP";
+  }
+
+  sendNetworkInput(directionLabel) {
+    if (!this.networkReady || !networkManager.isConnected()) {
+      return;
+    }
+    if (directionLabel !== this.lastSentDirection) {
+      networkManager.sendInput(directionLabel);
+      this.lastSentDirection = directionLabel;
+    }
+  }
+
+  updateLocal() {
     const { width, height } = this.cameras.main;
     const ballRadius = this.ball.displayWidth * 0.5;
 
-    this.gridBackground.tilePositionY -= height * 0.0015;
-
-    let playerDirection = 0;
-
-    if (this.touchingUp) {
-      playerDirection = -1;
-    } else if (this.touchingDown) {
-      playerDirection = 1;
-    } else if (this.cursors) {
-      if (this.cursors.up.isDown) {
-        playerDirection = -1;
-      } else if (this.cursors.down.isDown) {
-        playerDirection = 1;
-      }
-    }
-
+    const playerDirection = this.getInputDirectionValue();
     this.leftPaddle.setVelocityY(playerDirection * this.paddleSpeed);
-
-    if (this.networkReady && networkManager.isConnected()) {
-      const nextDirection =
-        playerDirection === -1
-          ? "UP"
-          : playerDirection === 1
-            ? "DOWN"
-            : "STOP";
-      if (nextDirection !== this.lastSentDirection) {
-        networkManager.sendInput(nextDirection);
-        this.lastSentDirection = nextDirection;
-      }
-    }
 
     const aiThreshold = this.rightPaddle.displayHeight * 0.15;
     const distanceToBall = this.ball.y - this.rightPaddle.y;
@@ -279,6 +422,76 @@ export class GameScene extends Phaser.Scene {
       this.leftScoreValue += 1;
       this.leftScoreText.setText(`${this.leftScoreValue}`);
       this.resetBall(-1);
+    }
+  }
+
+  updateNetworked(delta) {
+    const { height } = this.cameras.main;
+    const playerDirection = this.getInputDirectionValue();
+    const directionLabel = this.getInputDirectionLabel(playerDirection);
+    this.sendNetworkInput(directionLabel);
+
+    if (this.localSide) {
+      const localPaddle =
+        this.localSide === "left" ? this.leftPaddle : this.rightPaddle;
+      const halfHeight = localPaddle.displayHeight * 0.5;
+      const step = NETWORK_PADDLE_SPEED * (delta / (1000 / 60));
+      const nextY = Phaser.Math.Clamp(
+        (this.predictedLocalY ?? localPaddle.y) + playerDirection * step,
+        halfHeight,
+        height - halfHeight
+      );
+
+      this.predictedLocalY = nextY;
+
+      if (
+        this.serverLocalY !== null &&
+        Math.abs(this.predictedLocalY - this.serverLocalY) >
+          RECONCILIATION_THRESHOLD
+      ) {
+        this.predictedLocalY = this.serverLocalY;
+      }
+
+      localPaddle.y = this.predictedLocalY;
+    }
+
+    if (this.leftTargetY !== null && this.localSide !== "left") {
+      this.leftPaddle.y = Phaser.Math.Linear(
+        this.leftPaddle.y,
+        this.leftTargetY,
+        NETWORK_PADDLE_LERP
+      );
+    }
+    if (this.rightTargetY !== null && this.localSide !== "right") {
+      this.rightPaddle.y = Phaser.Math.Linear(
+        this.rightPaddle.y,
+        this.rightTargetY,
+        NETWORK_PADDLE_LERP
+      );
+    }
+
+    if (this.serverBallTarget) {
+      this.ball.x = Phaser.Math.Linear(
+        this.ball.x,
+        this.serverBallTarget.x,
+        NETWORK_BALL_LERP
+      );
+      this.ball.y = Phaser.Math.Linear(
+        this.ball.y,
+        this.serverBallTarget.y,
+        NETWORK_BALL_LERP
+      );
+    }
+  }
+
+  update(_time, delta) {
+    const { height } = this.cameras.main;
+    this.gridBackground.tilePositionY -= height * 0.0015;
+
+    if (this.networkMode) {
+      this.updateNetworked(delta);
+    } else {
+      this.updateLocal();
     }
   }
 }

@@ -18,11 +18,11 @@ export class NetworkManager {
       console.log(`Session ID: ${this.sessionId}`);
 
       this.setupListeners();
-      return true;
+      return this.room;
     } catch (error) {
       console.error("Failed to connect:", error);
       this.room = null;
-      return false;
+      return null;
     }
   }
 
@@ -64,6 +64,10 @@ export class NetworkManager {
 
   getLocalSessionId() {
     return this.sessionId;
+  }
+
+  getRoom() {
+    return this.room;
   }
 }
 
