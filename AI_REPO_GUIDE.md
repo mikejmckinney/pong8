@@ -33,6 +33,7 @@ This is a template repository for building a **mobile-optimized, retro-style mul
 │   ├── prompts/       # Onboarding prompts for AI agents
 │   └── copilot-instructions.md  # GitHub Copilot instructions
 ├── client/            # Phaser 3 client app (Vite)
+├── server/            # Colyseus server (TypeScript)
 ├── docs/              # Technical documentation and specifications
 ├── AGENTS.md          # Agent instructions (canonical)
 ├── AGENT.md           # Deprecated - points to AGENTS.md
@@ -45,7 +46,7 @@ This is a template repository for building a **mobile-optimized, retro-style mul
 ## Key Entry Points
 
 - **Game Client**: `client/` (Phaser 3 + Vite)
-- **Game Server**: Not yet implemented. Will be in `server/` using Node.js + Socket.io/Colyseus
+- **Game Server**: `server/` (Colyseus + Express)
 - **Shared Types**: Will be in `shared/` for TypeScript interfaces
 - **Agent Context**: `.context/` directory (to be created) for AI agent memory
 
@@ -81,6 +82,16 @@ npm run dev
 
 # Build for production
 npm run build
+```
+
+Run the server locally:
+```bash
+# Install dependencies
+cd server
+npm install
+
+# Start development server
+npm run dev
 ```
 
 ## How to Test

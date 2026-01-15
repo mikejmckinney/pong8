@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { Paddle } from "../objects/Paddle.js";
 import { Ball } from "../objects/Ball.js";
+import { networkManager } from "../network/NetworkManager.js";
 
 export class GameScene extends Phaser.Scene {
   constructor() {
@@ -64,6 +65,11 @@ export class GameScene extends Phaser.Scene {
     this.createScoreText();
 
     this.setupControls();
+
+    this.lastSentDirection = "STOP";
+    networkManager.connect().then((connected) => {
+      this.networkReady = connected;
+    });
 
     const initialDirection = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
     this.ball.launch(initialDirection);
@@ -242,6 +248,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.leftPaddle.setVelocityY(playerDirection * this.paddleSpeed);
+
+    if (this.networkReady && networkManager.isConnected()) {
+      const nextDirection =
+        playerDirection === -1
+          ? "UP"
+          : playerDirection === 1
+            ? "DOWN"
+            : "STOP";
+      if (nextDirection !== this.lastSentDirection) {
+        networkManager.sendInput(nextDirection);
+        this.lastSentDirection = nextDirection;
+      }
+    }
 
     const aiThreshold = this.rightPaddle.displayHeight * 0.15;
     const distanceToBall = this.ball.y - this.rightPaddle.y;

@@ -1,3 +1,4 @@
 node_modules/
 client/.vite/
 client/dist/
+server/dist/
