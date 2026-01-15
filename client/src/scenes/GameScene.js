@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { Paddle } from "../objects/Paddle.js";
 import { Ball } from "../objects/Ball.js";
 import { networkManager } from "../network/NetworkManager.js";
+import { audioManager } from "../audio/AudioManager.js";
 
 const NETWORK_WIDTH = 800;
 const NETWORK_HEIGHT = 600;
@@ -69,9 +70,37 @@ export class GameScene extends Phaser.Scene {
 
     this.leftScoreValue = 0;
     this.rightScoreValue = 0;
+    this.lastScores = { left: 0, right: 0 };
     this.createScoreText();
 
+    this.particleManager = this.add.particles(0, 0, "particle");
+    this.ballTrail = this.particleManager.createEmitter({
+      speed: { min: -20, max: 20 },
+      scale: { start: 1, end: 0 },
+      alpha: { start: 0.6, end: 0 },
+      lifespan: 400,
+      quantity: 1,
+      frequency: 30,
+      blendMode: "ADD",
+    });
+    this.ballTrail.startFollow(this.ball);
+
+    this.scoreBurst = this.particleManager.createEmitter({
+      speed: { min: 60, max: 160 },
+      scale: { start: 1, end: 0 },
+      alpha: { start: 1, end: 0 },
+      lifespan: 600,
+      quantity: 12,
+      blendMode: "ADD",
+      on: false,
+    });
+
     this.setupControls();
+
+    this.lastWallSoundAt = 0;
+
+    this.input.once("pointerdown", () => audioManager.unlock());
+    this.input.keyboard?.once("keydown", () => audioManager.unlock());
 
     this.networkMode = false;
     this.networkReady = false;
@@ -111,6 +140,7 @@ export class GameScene extends Phaser.Scene {
     const paddleHeight = Math.round(height * 0.2);
     const paddleRadius = Math.round(paddleWidth * 0.35);
     const ballSize = Math.round(Math.min(width, height) * 0.02);
+    const particleSize = Math.max(2, Math.round(Math.min(width, height) * 0.004));
     const gridSpacing = Math.round(width * 0.05);
 
     const leftGraphics = this.make.graphics({ add: false });
@@ -130,6 +160,20 @@ export class GameScene extends Phaser.Scene {
     ballGraphics.fillCircle(ballSize * 0.5, ballSize * 0.5, ballSize * 0.5);
     ballGraphics.generateTexture("ball", ballSize, ballSize);
     ballGraphics.destroy();
+
+    const particleGraphics = this.make.graphics({ add: false });
+    particleGraphics.fillStyle(0xffffff);
+    particleGraphics.fillCircle(
+      particleSize * 0.5,
+      particleSize * 0.5,
+      particleSize * 0.5
+    );
+    particleGraphics.generateTexture(
+      "particle",
+      particleSize,
+      particleSize
+    );
+    particleGraphics.destroy();
 
     const gridGraphics = this.make.graphics({ add: false });
     gridGraphics.lineStyle(1, 0x2b2b2b, 0.6);
@@ -243,6 +287,12 @@ export class GameScene extends Phaser.Scene {
     const direction = paddle === this.leftPaddle ? 1 : -1;
     const speed = ball.currentSpeed;
 
+    const tint = paddle === this.leftPaddle ? 0xff005c : 0x00c4ff;
+    if (this.ballTrail) {
+      this.ballTrail.setTint(tint);
+    }
+    audioManager.playPaddleHit();
+
     ball.setVelocity(
       Math.cos(bounceAngle) * speed * direction,
       Math.sin(bounceAngle) * speed
@@ -348,8 +398,16 @@ export class GameScene extends Phaser.Scene {
 
     if (side === "left") {
       this.leftScoreText.setText(`${player.score}`);
+      if (player.score > this.lastScores.left) {
+        this.lastScores.left = player.score;
+        this.playScoreEffects("left");
+      }
     } else {
       this.rightScoreText.setText(`${player.score}`);
+      if (player.score > this.lastScores.right) {
+        this.lastScores.right = player.score;
+        this.playScoreEffects("right");
+      }
     }
   }
 
@@ -417,11 +475,23 @@ export class GameScene extends Phaser.Scene {
     if (this.ball.x < -ballRadius) {
       this.rightScoreValue += 1;
       this.rightScoreText.setText(`${this.rightScoreValue}`);
+      this.playScoreEffects("right");
       this.resetBall(1);
     } else if (this.ball.x > width + ballRadius) {
       this.leftScoreValue += 1;
       this.leftScoreText.setText(`${this.leftScoreValue}`);
+      this.playScoreEffects("left");
       this.resetBall(-1);
+    }
+
+    const body = this.ball.body;
+    if (
+      body &&
+      (body.blocked.up || body.blocked.down) &&
+      this.time.now - this.lastWallSoundAt > 120
+    ) {
+      audioManager.playWallHit();
+      this.lastWallSoundAt = this.time.now;
     }
   }
 
@@ -481,6 +551,18 @@ export class GameScene extends Phaser.Scene {
         this.serverBallTarget.y,
         NETWORK_BALL_LERP
       );
+    }
+  }
+
+  playScoreEffects(side) {
+    audioManager.playScore();
+    this.cameras.main.shake(180, 0.01);
+
+    if (this.scoreBurst) {
+      const { width, height } = this.cameras.main;
+      const x = side === "left" ? width * 0.25 : width * 0.75;
+      const y = height * 0.2;
+      this.scoreBurst.explode(24, x, y);
     }
   }
 

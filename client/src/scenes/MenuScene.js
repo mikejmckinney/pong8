@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { audioManager } from "../audio/AudioManager.js";
 
 export class MenuScene extends Phaser.Scene {
   constructor() {
@@ -49,10 +50,12 @@ export class MenuScene extends Phaser.Scene {
     });
 
     this.input.once("pointerdown", () => {
+      audioManager.unlock();
       this.scene.start("GameScene");
     });
 
     this.input.keyboard?.once("keydown", () => {
+      audioManager.unlock();
       this.scene.start("GameScene");
     });
   }

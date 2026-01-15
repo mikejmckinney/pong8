@@ -136,6 +136,7 @@ Expected output: All checks pass (21 passed, 0 failed)
 |---------|----------|-------|
 | Game scenes | `client/src/scenes/` | Phaser Scene classes |
 | Game entities | `client/src/objects/` | Paddle, Ball, PowerUp classes |
+| Audio helpers | `client/src/audio/` | Web Audio API utilities |
 | Server rooms | `server/src/rooms/` | Colyseus room handlers |
 | Shared types | `shared/types/` | TypeScript interfaces |
 | Tests | `tests/` | Jest + headless Phaser |
