@@ -37,6 +37,22 @@ cd pong8
 bash test.sh
 ```
 
+### Run the Game Client
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+### Run the Game Server
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
 ### For GitHub Codespaces
 
 The repository includes a setup script for Codespaces:
@@ -55,6 +71,8 @@ pong8/
 │   ├── agents/           # Custom AI agents
 │   ├── prompts/          # AI onboarding prompts
 │   └── copilot-instructions.md
+├── client/               # Phaser 3 client app (Vite)
+├── server/               # Colyseus server (TypeScript)
 ├── docs/                 # Technical specifications
 ├── AI_REPO_GUIDE.md      # Canonical guide for AI agents
 ├── AGENTS.md             # Agent behavior rules
