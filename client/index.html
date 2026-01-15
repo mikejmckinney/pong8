@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>SynthPong</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #090d40;
+        touch-action: none;
+        font-family: "Press Start 2P", monospace;
+      }
+
+      #game-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      canvas {
+        display: block;
+        touch-action: none;
+      }
+
+      .crt-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.15) 0px,
+          rgba(0, 0, 0, 0.15) 1px,
+          transparent 1px,
+          transparent 2px
+        );
+        pointer-events: none;
+        z-index: 10;
+        animation: flicker 0.15s infinite;
+      }
+
+      .vignette {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.9);
+        pointer-events: none;
+        z-index: 11;
+      }
+
+      @keyframes flicker {
+        0% {
+          opacity: 0.97;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.98;
+        }
+      }
+
+      .rotate-device {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #090d40;
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        color: #ff005c;
+        text-align: center;
+        padding: 20px;
+        gap: 20px;
+      }
+
+      .rotate-device-icon {
+        font-size: 48px;
+        animation: rotate 2s infinite;
+      }
+
+      @keyframes rotate {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        50% {
+          transform: rotate(90deg);
+        }
+      }
+
+      @media (orientation: portrait) {
+        .rotate-device {
+          display: flex;
+        }
+
+        #game-container {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <div class="crt-overlay"></div>
+      <div class="vignette"></div>
+    </div>
+    <div class="rotate-device">
+      <div class="rotate-device-icon">📱</div>
+      <p>Please rotate your device</p>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

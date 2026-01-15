@@ -32,6 +32,7 @@ This is a template repository for building a **mobile-optimized, retro-style mul
 │   ├── agents/        # Custom agent definitions (judge.agent.md)
 │   ├── prompts/       # Onboarding prompts for AI agents
 │   └── copilot-instructions.md  # GitHub Copilot instructions
+├── client/            # Phaser 3 client app (Vite)
 ├── docs/              # Technical documentation and specifications
 ├── AGENTS.md          # Agent instructions (canonical)
 ├── AGENT.md           # Deprecated - points to AGENTS.md
@@ -43,7 +44,7 @@ This is a template repository for building a **mobile-optimized, retro-style mul
 
 ## Key Entry Points
 
-- **Game Client**: Not yet implemented. Will be in `client/` using Phaser 3
+- **Game Client**: `client/` (Phaser 3 + Vite)
 - **Game Server**: Not yet implemented. Will be in `server/` using Node.js + Socket.io/Colyseus
 - **Shared Types**: Will be in `shared/` for TypeScript interfaces
 - **Agent Context**: `.context/` directory (to be created) for AI agent memory
@@ -69,16 +70,17 @@ bash test.sh
 bash install.sh
 ```
 
-Once game code is implemented:
+Run the client locally:
 ```bash
-# Install dependencies (future)
+# Install dependencies
+cd client
 npm install
 
-# Run development server (future)
+# Run development server
 npm run dev
 
-# Run tests (future)
-npm test
+# Build for production
+npm run build
 ```
 
 ## How to Test
@@ -122,7 +124,7 @@ Expected output: All checks pass (21 passed, 0 failed)
 | Feature | Location | Notes |
 |---------|----------|-------|
 | Game scenes | `client/src/scenes/` | Phaser Scene classes |
-| Game entities | `client/src/entities/` | Paddle, Ball, PowerUp classes |
+| Game entities | `client/src/objects/` | Paddle, Ball, PowerUp classes |
 | Server rooms | `server/src/rooms/` | Colyseus room handlers |
 | Shared types | `shared/types/` | TypeScript interfaces |
 | Tests | `tests/` | Jest + headless Phaser |
